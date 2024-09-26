@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblox Casino</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #2c2c2c; /* Dark Gray */
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #5e5e9f; /* Dark Purple */
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .game {
+            background-color: #3d3d3d; /* Darker Gray */
+            border: 2px solid #5e5e9f; /* Dark Purple */
+            border-radius: 10px;
+            margin: 20px 0;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .button {
+            background-color: #5e5e9f; /* Dark Purple */
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #5e5e9f; /* Dark Purple */
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .login-form {
+            background-color: #444;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: none;
+            width: 80%;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .user-profile img {
+            border-radius: 50%;
+            width: 50px; /* Profile picture size */
+            height: 50px; /* Profile picture size */
+            margin-right: 10px;
+        }
+
+        .user-profile span {
+            font-size: 18px;
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Welcome to the Roblox Casino!</h1>
+    </header>
+
+    <div class="container">
+        <div class="login-form">
+            <input type="text" id="userId" placeholder="Enter your User ID">
+            <button class="button" onclick="checkInventory()">Check Inventory</button>
+        </div>
+
+        <div class="user-profile" id="user-profile" style="display: none;">
+            <img id="profile-pic" src="" alt="Profile Picture">
+            <span id="username"></span>
+        </div>
+
+        <div id="inventory-result"></div>
+        <div id="games" style="display:none;">
+            <!-- Games section can be added here -->
+        </div>
+        
+        <div>Robux Balance: <span id="robux-balance">0</span></div>
+    </div>
+
+    <footer>
+        <p>&copy; 2023 Roblox Casino</p>
+    </footer>
+
+    <script>
+        let robuxBalance = 0;
+        const apiKey = 'foLJnJ2p/UWP2RigKZBs0aL4CDfqdRdEf/gmtml15FWqeuhvZXlKaGJHY2lPaUpTVXpJMU5pSXNJbXRwWkNJNkluTnBaeTB5TURJeExUQTNMVEV6VkRFNE9qVXhPalE1V2lJc0luUjVjQ0k2SWtwWFZDSXNJbU4wZVNJNklrcFhWQ0o5LmV5SmlZWE5sUVhCcFMyVjVJam9pWm05TVNtNUtNbkF2VlZkUU1sSnBaMHRhUW5Nd1lVdzBRMFJtY1dSU1pFVm1MMmR0ZEcxc01UVkdWM0ZsZFdoMklpd2liM2R1WlhKSlpDSTZJamczTnpZMk56QWlMQ0poZFdRaU9pSlNiMkpzYjNoSmJuUmxjbTVoYkNJc0ltbHpjeUk2SWtOc2IzVmtRWFYwYUdWdWRHbGpZWFJwYjI1VFpYSjJhV05sSWl3aVpYaHdJam94TnpJM016RTBNRGd4TENKcFlYUWlPakUzTWpjek1UQTBPREVzSW01aVppSTZNVGN5TnpNeE1EUTRNWDAuZEJ0dXJyT2gzNjlHSnFjaVVIaDFXT2NnMHh1SEd5RkxhNldINERpUDF0THVfLUMzaXg2anp5M0pMSDBRYjBYZ3E5UTIxWDF6eTA5TDRCVE9udjl6aFN2ZV9QMXl4WWQyQnRGSHNyQ280dktTVFF5OGFoR0RGbzZ2SDNFSjlfMEhtLWduTXNvNGtxZE9QOXd0QXZMa25IWV9CY1J3czluWHd0ODJNSzNkU1BWN3RoZFZmd0xWOE91dzVuZE9aNkhZc1YyQnYwaHVVVjBJeE93a2RSUEtBbVV0c0VTV3dJRlBxbExoUGJZaDdoUVNibkxwbEdFc05XRkdPd2F2WlA5T2l3aEpramljX0JFWXhYNFBEVGhVMHdmWXJlUzdaN2c1Z1p3WmZURlA4c0VVTUxiWGRhUTlHbHlJQ25SSGFzck9VajY0MEFndDktT3V3WG02cmIxUjdR'; // Replace with your actual API key
+
+        function checkInventory() {
+            const userId = document.getElementById("userId").value;
+            const gamePassIds = [86245900, 86258068, 86240123]; // Game pass IDs to check
+
+            if (userId) {
+                // Fetch user info to validate user ID and get profile picture
+                fetch(`https://users.roblox.com/v1/users/${userId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`, // Include API key here
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("User not found or invalid User ID.");
+                    }
+                    return response.json();
+                })
+                .then(userData => {
+                    // Display user profile information
+                    document.getElementById("profile-pic").src = userData.avatarUrl; // Get profile picture
+                    document.getElementById("username").innerText = userData.name; // Get username
+                    document.getElementById("user-profile").style.display = "flex"; // Show user profile section
+
+                    // Proceed to check inventory
+                    const promises = gamePassIds.map(productId => 
+                        fetch(`https://inventory.roblox.com/v1/users/${userId}/items/1/${productId}/is-owned`, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${apiKey}`, // Include API key here for inventory check
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                    );
+
+                    Promise.all(promises)
+                        .then(results => {
+                            const ownedProducts = results
+                                .map((data, index) => ({ id: gamePassIds[index], isOwned: data.isOwned }))
+                                .filter(product => product.isOwned);
+
+                            if (ownedProducts.length > 0) {
+                                const totalValue = ownedProducts.length * 200; // Assuming each owned product is worth 200 Robux
+                                robuxBalance = totalValue; // Update Robux balance
+                                document.getElementById("robux-balance").innerText = robuxBalance;
+                                document.getElementById("inventory-result").innerText = 
+                                    `You own the following game passes: ${ownedProducts.map(p => p.id).join(", ")}. Total value: ${totalValue} Robux.`;
+                                
+                                document.getElementById("games").style.display = "block"; // Show games section
+                            } else {
+                                alert("You do not own any of the specified game passes.");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error fetching inventory:", error);
+                            alert("There was an error checking your inventory.");
+                        });
+                })
+                .catch(error => {
+                    alert(error.message);
+                });
+            } else {
+                alert("Please enter your User ID to check your inventory.");
+            }
+        }
+    </script>
+</body>
+
+</html>
